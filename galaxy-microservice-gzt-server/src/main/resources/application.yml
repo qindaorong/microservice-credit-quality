@@ -1,0 +1,38 @@
+# 服务名称
+spring:
+    application:
+        name: server-gzt
+
+# 端口号
+server:
+    port: 8770
+
+# Eureka集群配置信息
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://127.0.0.1:8761/eureka/
+
+channel:
+    guozhen:
+        endpoint: https://gbossh.id5.cn/services/QueryValidatorServices
+        desKey: 12345678
+        account: xinghe002
+        accountPassword: xinghe002_i)PX27$l
+        desCharset: GB18030
+        product: 3X010102
+
+swagger:
+    info:
+        title: ${spring.application.name}
+        description: GuoZhengTong-credit-quality
+        version: v1.0.0
+        base-package: com.galaxy.microservice.gzt.controller
+        enable: true
+
+okhttp3:
+    connect-timeout: 10
+    read-timeout: 10
+    write-timeout: 10
+    max-idle-connections: 100
+    max-retry: 2

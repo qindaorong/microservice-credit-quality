@@ -1,0 +1,43 @@
+# 端口号
+server:
+    port: 8775
+
+# 服务名称
+spring:
+    application:
+        name: gateway
+    cloud:
+        gateway:
+            discovery:
+                locator:
+                    enabled: false
+                    lowerCaseServiceId: true
+            routes:
+                - id: path_route
+                  uri: lb://SERVER-GZT
+                  predicates:
+                      - Path=/gzt/**
+                  filters:
+                      - StripPrefix=1
+
+
+# Eureka集群配置信息
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+
+swagger:
+    info:
+        title: ${spring.application.name}
+        description: GuoZhengTong-credit-quality
+        version: v1.0.0
+        base-package: com.galaxy.microservice.gzt.controller
+        enable: true
+
+okhttp3:
+    connect-timeout: 10
+    read-timeout: 10
+    write-timeout: 10
+    max-idle-connections: 100
+    max-retry: 2

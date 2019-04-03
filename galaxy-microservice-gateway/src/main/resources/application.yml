@@ -19,7 +19,10 @@ spring:
                       - Path=/gzt/**
                   filters:
                       - StripPrefix=1
-
+                      - name: Hystrix
+                        args:
+                            name: fallbackcmd
+                            fallbackUri: forward:lb:/gzt/fallback
 
 # Eureka集群配置信息
 eureka:

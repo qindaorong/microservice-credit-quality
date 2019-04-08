@@ -24,11 +24,24 @@
             <artifactId>galaxy-framework-web</artifactId>
             <version>1.0.0</version>
         </dependency>
-
-<!--        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>-->
+        <!--verify-->
+        <dependency>
+            <groupId>com.galaxy.app</groupId>
+            <artifactId>galaxy-framework-verify</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!--orm-->
+        <dependency>
+            <groupId>com.aggregate.app</groupId>
+            <artifactId>galaxy-framework-orm</artifactId>
+            <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-mongodb</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 		<!--Eureka Client-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

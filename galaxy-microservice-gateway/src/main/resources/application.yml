@@ -25,7 +25,7 @@ spring:
                   uri: lb://SERVER-GZT
                   predicates:
                       - Path=/gzt/**
-                      - Method=GET
+                      - Method= POST
                       - Host= **.galaxy.com
                   filters:
                       - StripPrefix=1

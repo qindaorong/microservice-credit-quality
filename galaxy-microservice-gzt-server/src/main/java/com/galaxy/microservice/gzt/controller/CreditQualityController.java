@@ -1,7 +1,10 @@
 package com.galaxy.microservice.gzt.controller;
 
 
+import com.galaxy.framework.bean.dto.RequestDto;
 import com.galaxy.framework.entity.ResponseResult;
+import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
+import com.galaxy.framework.verify.VerifyManage;
 import com.galaxy.framework.web.common.WebResCallback;
 import com.galaxy.framework.web.common.WebResCriteria;
 import com.galaxy.microservice.gzt.bean.dto.CreditQualityDto;
@@ -16,24 +19,35 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @Slf4j
-public class CreditQualityController {
+public class CreditQualityController extends BaseController{
 
     @Autowired
     GztService gztService;
 
+    @PostConstruct
+    @Override
+    public void init(){
+        super.init();
+    }
+
     @PostMapping(value =  "/personCreditQuality")
     public ResponseResult personCreditQuality(
+            final HttpServletRequest request,
             @ApiParam(required = true, name = "requestDto", value = "查询请求dto")
-            @RequestBody @Validated final CreditQualityDto creditQualityDto
+            @RequestBody @Validated final RequestDto requestDto
     ) {
         return new WebResCallback() {
             @Override
             public void execute(WebResCriteria criteria, Object... params) {
+                CreditQualityDto creditQualityDto =  loadCreditQualityDto(request,requestDto,CreditQualityDto.class);
                 criteria.addSingleResult(creditQualityDto);
             }
-        }.sendRequest(creditQualityDto);
+        }.sendRequest(requestDto);
     }
 
 

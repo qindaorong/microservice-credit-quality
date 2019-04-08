@@ -1,4 +1,4 @@
-package com.galaxy.microservice.gateway.common.components;
+package com.galaxy.microservice.gzt.common.components;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

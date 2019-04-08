@@ -1,6 +1,7 @@
 package com.galaxy.microservice.gateway;
 
 
+import com.galaxy.microservice.gateway.common.filters.AuthorizeFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -24,5 +25,18 @@ public class GatewayApplication {
 		context.registerShutdownHook();
 	}
 
+/*	@Bean
+    public RouteLocator customerRouteLocator(RouteLocatorBuilder builder) {
+
+        return builder.routes()
+                .route(r -> r.path("/gzt/**")
+                        .filters(f -> f.filter(new AuthorizeFilter()))
+                        .uri("lb://SERVER-GZT")
+                        .order(0)
+                        .id("customer_header_filter_router")
+                )
+                .build();
+
+    }*/
 
 }

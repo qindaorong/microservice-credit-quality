@@ -1,14 +1,12 @@
 package com.galaxy.microservice.gzt.bean.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode(callSuper = false)
 public class CreditQualityDto extends BaseDto{
 
     /**

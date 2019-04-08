@@ -6,6 +6,14 @@ server:
 spring:
     application:
         name: gateway
+
+    redis:
+        host: 39.105.171.244
+        port: 6379
+        password: QMSc3F
+        database: 15
+        timeout: 3000
+
     cloud:
         gateway:
             discovery:
@@ -17,12 +25,33 @@ spring:
                   uri: lb://SERVER-GZT
                   predicates:
                       - Path=/gzt/**
+                      - Method=GET
+                      - Host= **.galaxy.com
                   filters:
                       - StripPrefix=1
+                      # 调用级别限流
                       - name: Hystrix
                         args:
                             name: fallbackcmd
-                            fallbackUri: forward:lb:/gzt/fallback
+                            fallbackUri: forward:/gzt/fallback
+
+
+# hystrix 信号量隔离，3秒后自动超时
+hystrix:
+    command:
+        default:
+            execution:
+                isolation:
+                    strategy: SEMAPHORE
+                    thread:
+                        timeoutInMilliseconds: 3000
+                    semaphore:
+                        maxConcurrentRequests: 400
+            fallback:
+                isolation:
+                    semaphore:
+                        maxConcurrentRequests: 200
+    shareSecurityContext: true
 
 # Eureka集群配置信息
 eureka:

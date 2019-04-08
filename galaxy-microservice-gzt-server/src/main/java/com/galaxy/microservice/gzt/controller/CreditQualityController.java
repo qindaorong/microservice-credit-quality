@@ -6,6 +6,7 @@ import com.galaxy.framework.web.common.WebResCallback;
 import com.galaxy.framework.web.common.WebResCriteria;
 import com.galaxy.microservice.gzt.bean.dto.CreditQualityDto;
 import com.galaxy.microservice.gzt.service.GztService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,18 @@ public class CreditQualityController {
         }.sendRequest(creditQualityDto);
     }
 
+
+    /** *
+     *@描述   程序级别报错断融测试
+     *@参数
+     *@返回值  java.lang.String
+     *@创建人  alan qin
+     *@创建时间  04/04/2019
+     *@修改人和其它信息
+     **/
     @GetMapping(value =  "/hi")
-    public ResponseResult personCreditQuality() {
+    @HystrixCommand(fallbackMethod = "sayHiFallback")
+    public ResponseResult sayHi() {
         return new WebResCallback() {
             @Override
             public void execute(WebResCriteria criteria, Object... params) {
@@ -45,4 +56,7 @@ public class CreditQualityController {
         }.sendRequest();
     }
 
+    public ResponseResult sayHiFallback() {
+        return ResponseResult.fail(500,"sayHiFallback");
+    }
 }

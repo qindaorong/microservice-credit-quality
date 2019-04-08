@@ -17,5 +17,4 @@ public class FallBackController {
     public Mono<String> gztFallback() {
         return Mono.just("[gzt] service error, jump fallback");
     }
-
 }

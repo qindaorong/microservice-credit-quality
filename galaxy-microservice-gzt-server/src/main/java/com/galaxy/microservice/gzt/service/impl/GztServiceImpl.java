@@ -2,7 +2,7 @@ package com.galaxy.microservice.gzt.service.impl;
 
 import cn.id5.gboss.GbossClient;
 import cn.id5.gboss.GbossConfig;
-import com.galaxy.framework.utils.JsonUtil;
+//import com.galaxy.framework.utils.JsonUtil;
 import com.galaxy.microservice.gzt.bean.dto.CreditQualityDto;
 import com.galaxy.microservice.gzt.bean.dto.GuoZhenDto;
 import com.galaxy.microservice.gzt.bean.dto.QueryCreditDto;
@@ -58,7 +58,8 @@ public class GztServiceImpl implements GztService {
     private GuoZhenDto<QueryCreditDto> convert2GuoZhenDto(CreditQualityDto creditQualityDto) {
         String dateStr = creditQualityDto.getData();
 
-        QueryCreditDto queryCreditDto = JsonUtil.parseObject(dateStr, QueryCreditDto.class);
+        //QueryCreditDto queryCreditDto = JsonUtil.parseObject(dateStr, QueryCreditDto.class);
+        QueryCreditDto queryCreditDto = null;
 
         GuoZhenDto guoZhenDto = new GuoZhenDto();
         BeanUtils.copyProperties(creditQualityDto, guoZhenDto);

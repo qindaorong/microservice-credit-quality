@@ -24,7 +24,6 @@ public class CreditQualityDto extends BaseDto{
      */
     private String serverName;
 
-
     /**
      * 参数数据data
      */

@@ -1,9 +1,6 @@
 package com.galaxy.microservice.gzt.bean.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -11,6 +8,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class DataResponseVO implements Serializable {
 
     private static final long serialVersionUID = 8170829250230985443L;
@@ -28,4 +26,6 @@ public class DataResponseVO implements Serializable {
      * data
      */
     private String data;
+
+
 }

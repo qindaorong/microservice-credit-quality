@@ -5,5 +5,5 @@ import com.galaxy.microservice.gzt.bean.vo.DataResponseVO;
 
 public interface GztService {
 
-    public DataResponseVO queryCreditQuality(CreditQualityDto creditQualityDto);
+    DataResponseVO queryCreditQuality(CreditQualityDto creditQualityDto);
 }

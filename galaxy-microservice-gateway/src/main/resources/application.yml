@@ -21,7 +21,7 @@ spring:
                     enabled: false
                     lowerCaseServiceId: true
             routes:
-                - id: path_route
+                - id: gzt_route
                   uri: lb://SERVER-GZT
                   predicates:
                       - Path=/gzt/**

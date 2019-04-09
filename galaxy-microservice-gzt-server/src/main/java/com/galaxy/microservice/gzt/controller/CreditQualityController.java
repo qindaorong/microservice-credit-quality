@@ -3,11 +3,10 @@ package com.galaxy.microservice.gzt.controller;
 
 import com.galaxy.framework.bean.dto.RequestDto;
 import com.galaxy.framework.entity.ResponseResult;
-import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
-import com.galaxy.framework.verify.VerifyManage;
 import com.galaxy.framework.web.common.WebResCallback;
 import com.galaxy.framework.web.common.WebResCriteria;
 import com.galaxy.microservice.gzt.bean.dto.CreditQualityDto;
+import com.galaxy.microservice.gzt.bean.vo.DataResponseVO;
 import com.galaxy.microservice.gzt.service.GztService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.swagger.annotations.ApiParam;
@@ -36,6 +35,7 @@ public class CreditQualityController extends BaseController{
     }
 
     @PostMapping(value =  "/personCreditQuality")
+    @HystrixCommand(fallbackMethod = "fallback")
     public ResponseResult personCreditQuality(
             final HttpServletRequest request,
             @ApiParam(required = true, name = "requestDto", value = "查询请求dto")
@@ -45,7 +45,8 @@ public class CreditQualityController extends BaseController{
             @Override
             public void execute(WebResCriteria criteria, Object... params) {
                 CreditQualityDto creditQualityDto =  loadCreditQualityDto(request,requestDto,CreditQualityDto.class);
-                criteria.addSingleResult(creditQualityDto);
+                DataResponseVO dataResponseVO = gztService.queryCreditQuality(creditQualityDto);
+                criteria.addSingleResult(dataResponseVO);
             }
         }.sendRequest(requestDto);
     }
@@ -60,7 +61,6 @@ public class CreditQualityController extends BaseController{
      *@修改人和其它信息
      **/
     @GetMapping(value =  "/hi")
-    @HystrixCommand(fallbackMethod = "sayHiFallback")
     public ResponseResult sayHi() {
         return new WebResCallback() {
             @Override
@@ -70,7 +70,7 @@ public class CreditQualityController extends BaseController{
         }.sendRequest();
     }
 
-    public ResponseResult sayHiFallback() {
-        return ResponseResult.fail(500,"sayHiFallback");
+    public ResponseResult fallback(final HttpServletRequest request,@RequestBody @Validated final RequestDto requestDto) {
+        return ResponseResult.fail(500,"fallback");
     }
 }

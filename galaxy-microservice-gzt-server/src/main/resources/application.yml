@@ -35,6 +35,21 @@ spring:
         driver-class-name: com.mysql.jdbc.Driver
         maxActive: 20
         username: newdb2_dba1
+    data:
+        mongo:
+            socketKeepAlive: true
+            minConnectionsPerHost: 1
+            maxWaitTime: 120000
+            connectTimeout: 60000
+            socketTimeout: 0
+            connectionsPerHost: 1
+            threadsAllowedToBlockForConnectionMultiplier: 5
+        mongodb:
+            password: Xinghe#190325
+            database: credit_quality
+            port: 27017
+            host: 39.105.201.224
+            username: newdb_credit
 
 mybatis-plus:
     mapper-locations: classpath:/mapper/*Mapper.xml

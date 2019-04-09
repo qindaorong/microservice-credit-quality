@@ -50,9 +50,6 @@ public class CacheProcessAspect {
     @Autowired
     RedisDistributedLock redisDistributedLock;
 
-    @Autowired
-    MongoTemplate mongoTemplate;
-
     private final String LOCK_KEY_PREFIX="redis_lock_key_";
 
     @Pointcut(" args(com.galaxy.microservice.gzt.bean.dto.CreditQualityDto) && @annotation(com.galaxy.microservice.gzt.common.aop.annotation.CacheProcess)")
@@ -81,9 +78,6 @@ public class CacheProcessAspect {
             throw new BusinessException(ExceptionChannelCode.CHANNEL_NOT_OPEN);
         }
     }
-
-
-
 
     @Around("pointCut()")
     public Object doAround(ProceedingJoinPoint joinPoint)throws Throwable{

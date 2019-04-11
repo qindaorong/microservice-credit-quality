@@ -1,0 +1,82 @@
+# 服务名称
+spring:
+    application:
+        name: server-sms
+    redis:
+        host: 39.105.171.244
+        port: 6379
+        password: QMSc3F
+        database: 15
+        timeout: 3000
+    datasource:
+        minIdle: 1
+        validationQuery: select 1 FROM DUAL
+        initialSize: 1
+        maxWait: 60000
+        filters: stat
+        poolPreparedStatements: true
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://rm-2zecbh8861ly87v116o.mysql.rds.aliyuncs.com:3306/aggregate_credit?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
+        password: Xinghe#0622i
+        testOnBorrow: false
+        maxOpenPreparedStatements: 20
+        testWhileIdle: true
+        druid:
+            filter:
+                stat:
+                    log-slow-sql: true
+            web-stat-filter:
+                url-pattern: /*
+            stat-view-servlet:
+                url-pattern: /druid/*
+        minEvictableIdleTimeMillis: 300000
+        timeBetweenEvictionRunsMillis: 60000
+        testOnReturn: false
+        driver-class-name: com.mysql.jdbc.Driver
+        maxActive: 20
+        username: newdb2_dba1
+
+mybatis-plus:
+    mapper-locations: classpath:/mapper/*Mapper.xml
+    typeAliasesPackage: com.galaxy.microservice.gzt.entity.mysql
+    global-config:
+        logic-not-delete-value: 0
+        logic-delete-value: 1
+        meta-object-handler: com.galaxy.framework.mysql.PublicFieldsHandler
+        sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+
+
+# 端口号
+server:
+    port: 8780
+
+# Eureka集群配置信息
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://127.0.0.1:8761/eureka/
+
+swagger:
+    info:
+        title: ${spring.application.name}
+        description: sms-server
+        version: v1.0.0
+        base-package: com.galaxy.microservice.sms.controller
+        enable: true
+
+okhttp3:
+    connect-timeout: 10
+    read-timeout: 10
+    write-timeout: 10
+    max-idle-connections: 100
+    max-retry: 2
+
+
+channel:
+    welink:
+        getWay: https://seccf.51welink.com/submitdata/service.asmx/g_Submit
+        sprdId: 1012888
+        verification: local
+        customerName: dlbjxhhd
+        customerPassword: jRWS9C6s
+

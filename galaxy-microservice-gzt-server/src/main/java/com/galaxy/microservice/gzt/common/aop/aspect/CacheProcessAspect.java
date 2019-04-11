@@ -6,11 +6,11 @@ import com.galaxy.framework.exception.BusinessException;
 import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
 import com.galaxy.framework.verify.DateUtil;
 import com.galaxy.framework.verify.JsonUtil;
+import com.galaxy.framework.web.constants.ClientConstant;
 import com.galaxy.microservice.gzt.bean.dto.CreditQualityDto;
 import com.galaxy.microservice.gzt.bean.vo.DataResponseVO;
 import com.galaxy.microservice.gzt.common.aop.annotation.CacheProcess;
 import com.galaxy.microservice.gzt.common.components.RedisDistributedLock;
-import com.galaxy.microservice.gzt.common.constants.ClientConstant;
 import com.galaxy.microservice.gzt.common.exceptions.ExceptionChannelCode;
 import com.galaxy.microservice.gzt.entity.mongo.CreditQualityMongo;
 import com.galaxy.microservice.gzt.mapper.mongodb.CreditQualityMongoDao;
@@ -21,12 +21,13 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,9 @@ public class CacheProcessAspect {
 
     @Autowired
     RedisDistributedLock redisDistributedLock;
+
+    @Autowired
+    Environment environment;
 
     private final String LOCK_KEY_PREFIX="redis_lock_key_";
 
@@ -73,7 +77,7 @@ public class CacheProcessAspect {
         }else{
             throw new BusinessException(ExceptionChannelCode.PARAMETER_MISMATCH);
         }
-        Map<String, Object> maps = this.isChannelOpen(creditQualityDto,methodName);
+        Map<String, Object> maps = this.isChannelOpen(creditQualityDto);
         if(!maps.containsKey(methodName)){
             throw new BusinessException(ExceptionChannelCode.CHANNEL_NOT_OPEN);
         }
@@ -82,7 +86,7 @@ public class CacheProcessAspect {
     @Around("pointCut()")
     public Object doAround(ProceedingJoinPoint joinPoint)throws Throwable{
         CacheProcess cacheProcess = ((MethodSignature)joinPoint.getSignature()).getMethod().getAnnotation(CacheProcess.class);
-        String methodName = joinPoint.getSignature().getName();
+        //String methodName = joinPoint.getSignature().getName();
         Object rvt = null;
 
         if(!CollectionUtils.isEmpty(Lists.newArrayList(joinPoint.getArgs()))){
@@ -93,7 +97,7 @@ public class CacheProcessAspect {
             try {
                 redisDistributedLock.lock(lockKey,RedisDistributedLock.expireMsecs,RedisDistributedLock.timeoutMsecs);
                 //channel check
-                Map<String, Object> maps = this.isChannelOpen(creditQualityDto,methodName);
+                Map<String, Object> maps = this.isChannelOpen(creditQualityDto);
 
                 //amount check
                 if( cacheProcess.amountSwitch()){
@@ -106,7 +110,7 @@ public class CacheProcessAspect {
 
                 //cache check
                 if(cacheProcess.cacheSwitch()){
-                    List<CreditQualityMongo> list = creditQualityMongoDao.findByClientIdAndServerNameOrderByDateTimeDesc(creditQualityDto.getClientId(),methodName);
+                    List<CreditQualityMongo> list = creditQualityMongoDao.findByClientIdAndServerNameOrderByDateTimeDesc(creditQualityDto.getClientId(),creditQualityDto.getServerName());
 
                     if(!CollectionUtils.isEmpty(list)){
                         CreditQualityMongo creditQualityMongo = list.get(0);
@@ -122,7 +126,7 @@ public class CacheProcessAspect {
 
                             return dataResponseVO;
                         }else{
-                            creditQualityMongoDao.deleteByClientIdAndAndServerName(creditQualityDto.getClientId(),methodName);
+                            creditQualityMongoDao.deleteByClientIdAndAndServerName(creditQualityDto.getClientId(),creditQualityDto.getServerName());
                         }
                     }
                 }
@@ -132,7 +136,7 @@ public class CacheProcessAspect {
 
                 //deduction user amount
                 if(cacheProcess.amountSwitch()){
-                    this.deductionAmount(creditQualityDto,methodName);
+                    this.deductionAmount(creditQualityDto,creditQualityDto.getServerName());
                 }
 
                 if(rvt != null){
@@ -141,7 +145,7 @@ public class CacheProcessAspect {
                     CreditQualityMongo creditQualityMongo = CreditQualityMongo.builder()
                             .clientId(dataResponseVO.getClientId())
                             .dateTime(new Date())
-                            .serverName(methodName)
+                            .serverName(creditQualityDto.getServerName())
                             .qualityData(dataResponseVO.getData())
                             .outId(dataResponseVO.getOuterId())
                             .build();
@@ -191,22 +195,22 @@ public class CacheProcessAspect {
     }
 
 
-    private Map<String, Object> isChannelOpen(CreditQualityDto dto,String methodName){
+    private Map<String, Object> isChannelOpen(CreditQualityDto dto){
         Map<String, Object> maps = this.loadClientChannelMap(dto);
 
-        if(!maps.containsKey(methodName)){
+        if(!maps.containsKey(dto.getServerName())){
             throw new BusinessException(ExceptionChannelCode.CHANNEL_NOT_OPEN);
         }
         return maps;
     }
 
 
-    private void deductionAmount(CreditQualityDto dto,String methodName){
+    private void deductionAmount(CreditQualityDto dto,String serverName){
         //server map {key:value} [key:方法名称]， [value：调用次数]; 固定参数：[channel_amount] value:[通道总金额]
         Map<String, Object> maps = this.loadClientChannelMap(dto);
 
-        if(maps.containsKey(methodName)){
-            maps.put(methodName,Long.valueOf(maps.get(methodName).toString()) + 1);
+        if(maps.containsKey(serverName)){
+            maps.put(serverName,Long.valueOf(maps.get(serverName).toString()) + 1);
         }
         if(maps.containsKey(ClientConstant.CHANNEL_AMOUNT)){
             //TODO 动态修改
@@ -219,9 +223,13 @@ public class CacheProcessAspect {
 
 
     private Map<String,Object> loadClientChannelMap(CreditQualityDto dto){
-        Object object = redisTemplate.getHashKey(dto.getClientId(),dto.getServerName());
-
-        JSONObject jsonObject = JSON.parseObject(object.toString());
-        return  JSONObject.toJavaObject(jsonObject, Map.class);
+        try {
+            String microServiceName =environment.getProperty("spring.application.name");
+            Object object = redisTemplate.getHashKey(dto.getClientId(),microServiceName);
+            JSONObject jsonObject = JSON.parseObject(object.toString());
+            return  JSONObject.toJavaObject(jsonObject, Map.class);
+        } catch (Exception e) {
+            return new HashMap<>(0);
+        }
     }
 }

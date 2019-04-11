@@ -34,6 +34,19 @@ spring:
                         args:
                             name: fallbackcmd
                             fallbackUri: forward:/gzt/fallback
+                - id: sms_route
+                  uri: lb://SERVER-SMS
+                  predicates:
+                      - Path=/sms/**
+                      - Method= POST
+                      - Host= **.galaxy.com
+                  filters:
+                      - StripPrefix=1
+                      # 调用级别限流
+                      - name: Hystrix
+                        args:
+                            name: fallbackcmd
+                            fallbackUri: forward:/gzt/fallback
 
 
 # hystrix 信号量隔离，3秒后自动超时

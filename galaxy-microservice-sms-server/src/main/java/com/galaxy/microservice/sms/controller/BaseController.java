@@ -1,11 +1,12 @@
-package com.galaxy.microservice.gzt.controller;
+package com.galaxy.microservice.sms.controller;
 
 import com.galaxy.framework.bean.dto.RequestDto;
 import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
 import com.galaxy.framework.verify.VerifyManage;
 import com.galaxy.framework.web.constants.ClientConstant;
-import com.galaxy.microservice.gzt.bean.dto.CreditQualityDto;
-import com.galaxy.microservice.gzt.common.components.SpringApplicationContext;
+import com.galaxy.microservice.sms.bean.dto.MessageDto;
+import com.galaxy.microservice.sms.common.components.SpringApplicationContext;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,7 +16,8 @@ import javax.servlet.http.HttpServletRequest;
  * @Author alan qin
  * @Date 2019-04-08
  **/
-public abstract class BaseController  extends VerifyManage {
+@Slf4j
+public abstract class BaseController extends VerifyManage {
 
     GalaxyRedisTemplate redisTemplate;
 
@@ -25,10 +27,12 @@ public abstract class BaseController  extends VerifyManage {
 
     private String loadClientPublicKey(HttpServletRequest request){
         String clientId = request.getHeader(ClientConstant.CLIENT_ID);
-        return redisTemplate.getHashKey(clientId, ClientConstant.PUBLIC_KEY).toString();
+        String publicKeyStr = String.valueOf(redisTemplate.getHashKey(clientId, ClientConstant.PUBLIC_KEY));
+        log.info("client: [{}] ,publicKey is [{}]",clientId,publicKeyStr);
+        return publicKeyStr;
     }
 
-    public CreditQualityDto loadCreditQualityDto(HttpServletRequest request, RequestDto dto, Class<CreditQualityDto> clazz){
+    public MessageDto loadDto(HttpServletRequest request, RequestDto dto, Class<MessageDto> clazz){
         String clientPublicKey =this.loadClientPublicKey(request);
         return super.loadRequirementDto(clientPublicKey,dto,clazz);
     }

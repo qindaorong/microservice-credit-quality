@@ -1,7 +1,7 @@
 package com.galaxy.microservice.sms.common.interceptors;
 
-import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
-import com.galaxy.framework.verify.VerifyManage;
+import com.galaxy.framework.redis.GalaxyRedisTemplate;
+import com.galaxy.framework.util.VerifyManage;
 import com.galaxy.framework.web.constants.ClientConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

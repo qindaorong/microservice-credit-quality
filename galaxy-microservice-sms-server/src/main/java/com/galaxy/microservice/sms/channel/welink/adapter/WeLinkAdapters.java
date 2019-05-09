@@ -3,8 +3,8 @@ package com.galaxy.microservice.sms.channel.welink.adapter;
 
 import com.galaxy.framework.entity.CodeMessage;
 import com.galaxy.framework.exception.BusinessException;
-import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
-import com.galaxy.framework.verify.JsonUtil;
+import com.galaxy.framework.redis.GalaxyRedisTemplate;
+import com.galaxy.framework.util.JsonUtil;
 import com.galaxy.microservice.sms.bean.dto.MessageDto;
 import com.galaxy.microservice.sms.bean.dto.SendMessageDto;
 import com.galaxy.microservice.sms.bean.dto.SendVerificationDto;
@@ -49,7 +49,7 @@ public class WeLinkAdapters implements SmsService {
         VerificationCodeDto dto = messageDto.getT();
         GalaxyRedisTemplate redisTemplate = SpringApplicationContext.getBean(GalaxyRedisTemplate.class);
 
-        String codeValue = redisTemplate.get(dto.getMobileNumber());
+        String codeValue = redisTemplate.getValueOperations().get(dto.getMobileNumber());
         if (StringUtils.isEmpty(codeValue)) {
             throw new BusinessException(ExceptionCode.CODE_EXPIRATION);
         }
@@ -57,7 +57,7 @@ public class WeLinkAdapters implements SmsService {
             throw new BusinessException(ExceptionCode.CODE_ERROR);
         }
 
-        redisTemplate.remove(dto.getMobileNumber());
+        redisTemplate.deleteKey(dto.getMobileNumber());
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.galaxy.microservice.sms.common.aop.aspect;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.galaxy.framework.exception.BusinessException;
-import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
+import com.galaxy.framework.redis.GalaxyRedisTemplate;
 import com.galaxy.microservice.sms.bean.dto.MessageDto;
 import com.galaxy.microservice.sms.common.exception.ExceptionCode;
 import com.google.common.collect.Lists;
@@ -14,7 +14,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
@@ -64,7 +63,7 @@ public class CacheProcessAspect {
         Map<String,Object> map = null;
         try {
             String microServiceName =environment.getProperty("spring.application.name");
-            Object object = redisTemplate.getHashKey(dto.getClientId(),microServiceName);
+            Object object = redisTemplate.getMapOperations().getHashEntriesBykey(dto.getClientId(),microServiceName);
             JSONObject jsonObject = JSON.parseObject(object.toString());
             map = JSONObject.toJavaObject(jsonObject, Map.class);
             return map.containsKey(methodName);

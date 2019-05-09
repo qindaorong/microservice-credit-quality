@@ -1,8 +1,8 @@
 package com.galaxy.microservice.sms.controller;
 
 import com.galaxy.framework.bean.dto.RequestDto;
-import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
-import com.galaxy.framework.verify.VerifyManage;
+import com.galaxy.framework.redis.GalaxyRedisTemplate;
+import com.galaxy.framework.util.VerifyManage;
 import com.galaxy.framework.web.constants.ClientConstant;
 import com.galaxy.microservice.sms.bean.dto.MessageDto;
 import com.galaxy.microservice.sms.common.components.SpringApplicationContext;
@@ -27,7 +27,7 @@ public abstract class BaseController extends VerifyManage {
 
     private String loadClientPublicKey(HttpServletRequest request){
         String clientId = request.getHeader(ClientConstant.CLIENT_ID);
-        String publicKeyStr = String.valueOf(redisTemplate.getHashKey(clientId, ClientConstant.PUBLIC_KEY));
+        String publicKeyStr = String.valueOf(redisTemplate.getMapOperations().getHashEntriesBykey(clientId, ClientConstant.PUBLIC_KEY));
         log.info("client: [{}] ,publicKey is [{}]",clientId,publicKeyStr);
         return publicKeyStr;
     }

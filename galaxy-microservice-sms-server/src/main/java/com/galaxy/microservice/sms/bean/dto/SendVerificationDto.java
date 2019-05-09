@@ -1,6 +1,6 @@
 package com.galaxy.microservice.sms.bean.dto;
 
-import com.galaxy.framework.verify.JsonUtil;
+import com.galaxy.framework.util.JsonUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

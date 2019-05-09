@@ -1,6 +1,5 @@
 package com.galaxy.microservice.sms.bean.dto;
 
-import com.galaxy.framework.verify.JsonUtil;
 import lombok.*;
 
 /**

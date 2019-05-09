@@ -1,16 +1,14 @@
 package com.galaxy.microservice.sms.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.galaxy.framework.exception.BusinessException;
-import com.galaxy.framework.redis.components.GalaxyRedisTemplate;
-import com.galaxy.framework.verify.JsonUtil;
+import com.galaxy.framework.redis.GalaxyRedisTemplate;
+import com.galaxy.framework.util.JsonUtil;
 import com.galaxy.microservice.sms.bean.dto.*;
 import com.galaxy.microservice.sms.common.aop.annotation.MethodCheck;
 import com.galaxy.microservice.sms.common.exception.ExceptionCode;
 import com.galaxy.microservice.sms.enums.ChannelStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import springfox.documentation.spring.web.json.Json;
 
 /**
  * @ClassName： PassportForMessageAdapter
@@ -34,7 +32,7 @@ public class PassportForMessageAdapter {
 
         if (flag) {
             //save verificationCode and mobileNumber into redis
-            redisTemplate.setForTimeMIN(dto.getMobileNumber(), dto.getVerificationCode(), dto.getEffectiveTime());
+            redisTemplate.getValueOperations().setForTimeMIN(dto.getMobileNumber(), dto.getVerificationCode(), dto.getEffectiveTime());
         } else {
             throw new BusinessException(ExceptionCode.MESSAGE_SERVICE_ERROR);
         }

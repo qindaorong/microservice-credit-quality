@@ -9,7 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @Slf4j
 @SpringBootApplication
-//@EnableEurekaClient
+@EnableEurekaClient
 @EnableCircuitBreaker //对HystrixR熔断机制的支持
 public class SmsServerApplication {
 
